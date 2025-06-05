@@ -1,5 +1,5 @@
 fn main() {
-    let code = "Addi estas levas 1 kaj tio. Addas 2";
+    let code = "inci estas levas 1 kaj tion. no estas inci 2. levas 2 kaj non";
     println!("{}", run(code).unwrap());
 }
 
@@ -77,13 +77,12 @@ impl Expr {
 
     fn compile(&self) -> Option<String> {
         match self {
-            Expr::Add(nums) => Some(format!(
-                "[{}].reduce((acc, cur) => acc + cur, 0)",
+            Expr::Add(nums) => Some(
                 nums.iter()
                     .map(|x| x.compile())
                     .collect::<Option<Vec<_>>>()?
-                    .join(", ")
-            )),
+                    .join(" + "),
+            ),
             Expr::Defun(name, body) => Some(format!(
                 "function {name}(ti) {{ return {} }}",
                 body.first()?.compile()?
