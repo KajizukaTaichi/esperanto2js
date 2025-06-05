@@ -26,7 +26,7 @@ impl Expr {
     fn parse(tokens: Vec<Token>) -> Option<Vec<Self>> {
         let tokenss: Vec<_> = tokens.split(|x| matches!(x, Token::And)).collect();
         let stmtgen = |tokens: Vec<Token>| match tokens.get(1)? {
-            Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
+            Token::Verb(name) => match name.as_str() {
                 "est" => match tokens.get(0)? {
                     Token::Noun(name) => Some(Expr::Let(
                         name.to_owned(),
@@ -43,7 +43,7 @@ impl Expr {
             _ => None,
         };
         let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
-            Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
+            Token::Infinitive(name) => match name.as_str() {
                 "lev" => Some(Expr::Add(Expr::parse(tokens.get(1..)?.to_vec())?)),
                 name => Some(Expr::Call(
                     name.to_string(),
