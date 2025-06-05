@@ -57,7 +57,6 @@ impl Expr {
                 )),
             },
             Token::Number(n) => Some(Expr::Number(*n)),
-            Token::Noun(n) => Some(Expr::Variable(n.to_owned())),
             Token::Accusative(n) => match *n.clone() {
                 Token::Noun(n) => Some(Expr::Variable(n)),
                 _ => None,
