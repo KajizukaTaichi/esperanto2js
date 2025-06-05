@@ -99,7 +99,7 @@ impl Expr {
                     .join(op),
             ),
             Expr::Defun(name, body) => Some(format!(
-                "function {name}(ti) {{ return {} }}",
+                "function {name}(...ti) {{ return {} }}",
                 body.first()?.compile()?
             )),
             Expr::Index(array, index) => Some(format!("{array}[{}]", index.first()?.compile()?)),
