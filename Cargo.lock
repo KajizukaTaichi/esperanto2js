@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "ppe"
+name = "esperanto2js"
 version = "0.1.0"
