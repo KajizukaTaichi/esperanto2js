@@ -1,6 +1,6 @@
 fn main() {
     println!("Hello, world!");
-    let code = ["Di estas levas 1 kaj 2", "Das 2"];
+    let code = ["Addi estas levi 1 kaj tio", "Das 2"];
     for line in code {
         let tokens = line
             .split_whitespace()
@@ -25,23 +25,29 @@ enum Expr {
 impl Expr {
     fn parse(tokens: Vec<Token>) -> Option<Vec<Self>> {
         let tokenss: Vec<_> = tokens.split(|x| matches!(x, Token::And)).collect();
-        let exprgen = |tokens: Vec<Token>, n: usize| match tokens.get(n)? {
+        let stmtgen = |tokens: Vec<Token>| match tokens.get(1)? {
             Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
-                "lev" => Some(Expr::Add(Expr::parse(tokens.get(n + 1..)?.to_vec())?)),
-                "est" => match tokens.first()? {
+                "est" => match tokens.get(0)? {
                     Token::Noun(name) => Some(Expr::Let(
                         name.to_owned(),
-                        Expr::parse(tokens.get(n + 1..)?.to_vec())?,
+                        Expr::parse(tokens.get(2..)?.to_vec())?,
                     )),
                     Token::Infinitive(name) => Some(Expr::Defun(
                         name.to_owned(),
-                        Expr::parse(tokens.get(n + 1..)?.to_vec())?,
+                        Expr::parse(tokens.get(2..)?.to_vec())?,
                     )),
                     _ => None,
                 },
+                _ => None,
+            },
+            _ => None,
+        };
+        let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
+            Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
+                "lev" => Some(Expr::Add(Expr::parse(tokens.get(1..)?.to_vec())?)),
                 name => Some(Expr::Call(
                     name.to_string(),
-                    Expr::parse(tokens.get(n + 1..)?.to_vec())?,
+                    Expr::parse(tokens.get(1..)?.to_vec())?,
                 )),
             },
             Token::Number(n) => Some(Expr::Number(*n)),
@@ -53,15 +59,12 @@ impl Expr {
         };
         let tried = |x: &&[Token]| {
             let x = x.to_vec();
-            if let Some(res) = exprgen(x.clone(), 0) {
-                Some(res)
-            } else {
-                exprgen(x, 1)
-            }
+            stmtgen(x.clone()).or_else(|| exprgen(x))
         };
         if tokenss.iter().all(|x| x.len() == 1) {
             tokenss.iter().map(tried).collect()
         } else {
+            dbg!(&tokens);
             Some(vec![tried(&&tokens.as_slice())?])
         }
     }
