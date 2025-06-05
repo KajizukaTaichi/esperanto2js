@@ -79,6 +79,15 @@ impl Expr {
                 "function {name}(ti) {{ {} }}",
                 body.first()?.compile()?
             )),
+            Expr::Let(name, body) => Some(format!("let {name} = {}", body.first()?.compile()?)),
+            Expr::Call(name, args) => Some(format!(
+                "{name}({})",
+                args.iter()
+                    .map(|x| x.compile())
+                    .collect::<Option<Vec<_>>>()?
+                    .join(", ")
+            )),
+            Expr::Variable(v) => Some(v.to_owned()),
             Expr::Number(n) => Some(n.to_string()),
         }
     }
