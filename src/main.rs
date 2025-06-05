@@ -1,13 +1,12 @@
 fn main() {
     println!("Hello, world!");
-    let code = ["Addi estas levi 1 kaj tio", "Das 2"];
+    let code = ["Addi estas levas 1 kaj tion", "Addas 2"];
     for line in code {
         let tokens = line
             .split_whitespace()
             .map(|x| Token::parse(x))
             .collect::<Option<Vec<_>>>()
             .unwrap();
-        dbg!(&tokens);
         dbg!(Expr::parse(tokens));
     }
 }
@@ -43,7 +42,7 @@ impl Expr {
             _ => None,
         };
         let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
-            Token::Infinitive(name) => match name.as_str() {
+            Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
                 "lev" => Some(Expr::Add(Expr::parse(tokens.get(1..)?.to_vec())?)),
                 name => Some(Expr::Call(
                     name.to_string(),
@@ -51,6 +50,7 @@ impl Expr {
                 )),
             },
             Token::Number(n) => Some(Expr::Number(*n)),
+            Token::Noun(n) => Some(Expr::Variable(n.to_owned())),
             Token::Accusative(n) => match *n.clone() {
                 Token::Noun(n) => Some(Expr::Variable(n)),
                 _ => None,
@@ -64,7 +64,6 @@ impl Expr {
         if tokenss.iter().all(|x| x.len() == 1) {
             tokenss.iter().map(tried).collect()
         } else {
-            dbg!(&tokens);
             Some(vec![tried(&&tokens.as_slice())?])
         }
     }
