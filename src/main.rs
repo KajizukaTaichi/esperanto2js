@@ -1,18 +1,16 @@
 fn main() {
-    let code = ["Addi estas levas 1 kaj tion", "Addas 2"];
-    println!("{}", run(code.as_slice()).unwrap());
+    let code = "Addi estas levas 1, 2 kaj tion. Addas 2";
+    println!("{}", run(code).unwrap());
 }
 
-fn run(code: &[&str]) -> Option<String> {
+fn run(code: &str) -> Option<String> {
     println!("Hello, world!");
-
     let mut result = String::new();
-    for line in code {
+    for line in code.trim().split(".") {
         let tokens = line
             .split_whitespace()
             .map(|x| Token::parse(x))
-            .collect::<Option<Vec<_>>>()
-            .unwrap();
+            .collect::<Option<Vec<_>>>()?;
         let ast = Expr::parse(tokens)?;
         result.push_str(&ast.first()?.compile()?);
         result.push_str(";\n");
@@ -26,7 +24,7 @@ enum Expr {
     Let(String, Vec<Expr>),
     Call(String, Vec<Expr>),
     Add(Vec<Expr>),
-    Number(f64),
+    Number(isize),
     Variable(String),
 }
 
@@ -113,7 +111,7 @@ enum Token {
     Adverb(String),
     Verb(String),
     Infinitive(String),
-    Number(f64),
+    Number(isize),
     And,
 }
 
@@ -136,7 +134,7 @@ impl Token {
             Some(Token::Plural(Box::new(Token::parse(source)?)))
         } else if let Some(source) = source.strip_suffix("n") {
             Some(Token::Accusative(Box::new(Token::parse(source)?)))
-        } else if let Ok(source) = source.parse::<f64>() {
+        } else if let Ok(source) = source.parse::<isize>() {
             Some(Token::Number(source))
         } else {
             None
