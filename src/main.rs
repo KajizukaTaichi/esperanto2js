@@ -22,6 +22,7 @@ fn run(code: &str) -> Option<String> {
 enum Expr {
     Defun(String, Vec<Expr>),
     Let(String, Vec<Expr>),
+    Index(String, Box<Expr>),
     Call(String, Vec<Expr>),
     Oper(String, Vec<Expr>),
     Number(isize),
@@ -63,6 +64,7 @@ impl Expr {
                     Expr::parse(tokens.get(1..)?.to_vec())?,
                 )),
             },
+            Token::Adjective(array) => Some(Expr::Index(array, ())),
             Token::Number(n) => Some(Expr::Number(*n)),
             Token::Accusative(n) => match *n.clone() {
                 Token::Noun(n) => Some(Expr::Variable(n)),
