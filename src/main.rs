@@ -1,5 +1,5 @@
 fn main() {
-    let code = "Addi estas levas 1, 2 kaj tion. Addas 2";
+    let code = "Addi estas levas 1 kaj tio. Addas 2";
     println!("{}", run(code).unwrap());
 }
 
