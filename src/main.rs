@@ -1,7 +1,7 @@
 fn main() {
     let code = "
-        Hogi estas levi 1 kaj tion.
-        Numero estas hogi levi 1 kaj 2.
+        Hogi estas aldoni 1 kaj tion.
+        Numero estas hogi aldoni 1 kaj 2.
         Mi multas 3 kaj numeron
     ";
     println!("{}", run(code).unwrap());
@@ -54,7 +54,7 @@ impl Expr {
         };
         let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
             Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
-                "lev" => Some(Expr::Oper(
+                "aldon" => Some(Expr::Oper(
                     "+".to_owned(),
                     Expr::parse(tokens.get(1..)?.to_vec())?,
                 )),
