@@ -1,14 +1,23 @@
 fn main() {
-    println!("Hello, world!");
     let code = ["Addi estas levas 1 kaj tion", "Addas 2"];
+    println!("{}", run(code.as_slice()).unwrap());
+}
+
+fn run(code: &[&str]) -> Option<String> {
+    println!("Hello, world!");
+
+    let mut result = String::new();
     for line in code {
         let tokens = line
             .split_whitespace()
             .map(|x| Token::parse(x))
             .collect::<Option<Vec<_>>>()
             .unwrap();
-        dbg!(Expr::parse(tokens));
+        let ast = Expr::parse(tokens)?;
+        result.push_str(&ast.first()?.compile()?);
+        result.push_str(";\n");
     }
+    Some(result)
 }
 
 #[derive(PartialEq, Clone, Debug)]
@@ -78,7 +87,7 @@ impl Expr {
                     .join(", ")
             )),
             Expr::Defun(name, body) => Some(format!(
-                "function {name}(ti) {{ {} }}",
+                "function {name}(ti) {{ return {} }}",
                 body.first()?.compile()?
             )),
             Expr::Let(name, body) => Some(format!("let {name} = {}", body.first()?.compile()?)),
