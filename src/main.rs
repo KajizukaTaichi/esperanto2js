@@ -65,6 +65,16 @@ impl Expr {
             Some(vec![tried(&&tokens.as_slice())?])
         }
     }
+
+    fn compile(&self) -> Option<String> {
+        match self {
+            Expr::Add(nums) => Some(format!(
+                "[{}]reduce((acc, cur) => acc + cur, 0)",
+  nums.iter().map(|x| x.compile()).collect::<Option<Vec<_>>>()?.join(", ")
+            )),
+            _=>todo!()
+        }
+    }
 }
 
 #[derive(PartialEq, Clone, Debug)]
