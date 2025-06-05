@@ -22,7 +22,7 @@ fn run(code: &str) -> Option<String> {
 enum Expr {
     Defun(String, Vec<Expr>),
     Let(String, Vec<Expr>),
-    Index(String, Box<Expr>),
+    Index(String, Vec<Expr>),
     Call(String, Vec<Expr>),
     Oper(String, Vec<Expr>),
     Number(isize),
@@ -64,7 +64,10 @@ impl Expr {
                     Expr::parse(tokens.get(1..)?.to_vec())?,
                 )),
             },
-            Token::Adjective(array) => Some(Expr::Index(array, ())),
+            Token::Adjective(array) => Some(Expr::Index(
+                array.to_owned(),
+                Expr::parse(tokens.get(1..)?.to_vec())?,
+            )),
             Token::Number(n) => Some(Expr::Number(*n)),
             Token::Accusative(n) => match *n.clone() {
                 Token::Noun(n) => Some(Expr::Variable(n)),
@@ -99,6 +102,7 @@ impl Expr {
                 "function {name}(ti) {{ return {} }}",
                 body.first()?.compile()?
             )),
+            Expr::Index(array, index) => Some(format!("{array}[{}]", index.first()?.compile()?)),
             Expr::Let(name, body) => Some(format!("let {name} = {}", body.first()?.compile()?)),
             Expr::Call(name, args) => Some(format!(
                 "{name}({})",
