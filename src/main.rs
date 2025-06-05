@@ -1,7 +1,7 @@
 fn main() {
     let code = "
         Hogi estas levi 1 kaj tion.
-        Numero estas hogas levi 1 kaj 2.
+        Numero estas hogi levi 1 kaj 2.
         Mi multas 3 kaj numeron
     ";
     println!("{}", run(code).unwrap());
