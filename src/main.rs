@@ -1,10 +1,13 @@
 fn main() {
-    let code = "inci estas levas 1 kaj tion. no estas inci 2. levas 2 kaj non";
+    let code = "
+        Inci estas levi 1 kaj tion.
+        Numero estas inci levi 1 kaj 2.
+        Mi levas 3 kaj numeron";
     println!("{}", run(code).unwrap());
 }
 
 fn run(code: &str) -> Option<String> {
-    println!("Hello, world!");
+    let code = code.to_lowercase();
     let mut result = String::new();
     for line in code.trim().split(".") {
         let tokens = line
@@ -64,7 +67,11 @@ impl Expr {
             _ => None,
         };
         let tried = |x: &&[Token]| {
-            let x = x.to_vec();
+            let mut x = x.to_vec();
+            match x.first()? {
+                Token::Infinitive(name) if name == "m" => x = x.get(1..)?.to_vec(),
+                _ => {}
+            }
             stmtgen(x.clone()).or_else(|| exprgen(x))
         };
         if tokenss.iter().all(|x| x.len() == 1) {
