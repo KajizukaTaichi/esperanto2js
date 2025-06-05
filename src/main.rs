@@ -50,7 +50,7 @@ impl Expr {
         };
         let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
             Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
-                "alkalkul" => Some(Expr::Oper(
+                "adici" => Some(Expr::Oper(
                     "+".to_owned(),
                     Expr::parse(tokens.get(1..)?.to_vec())?,
                 )),
