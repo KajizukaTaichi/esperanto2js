@@ -83,7 +83,7 @@ impl Expr {
             }
             stmtgen(x.clone()).or_else(|| exprgen(x))
         };
-        if tokenss.iter().all(|x| x.len() == 1) {
+        if tokenss.iter().all(|x| x.len() <= 2) {
             tokenss.iter().map(tried).collect()
         } else {
             Some(vec![tried(&&tokens.as_slice())?])
