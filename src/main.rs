@@ -1,6 +1,6 @@
 fn main() {
     println!("Hello, world!");
-    let code = ["Di estas levas 19", "Das 2"];
+    let code = ["Di estas levas 1 kaj 2", "Das 2"];
     for line in code {
         let tokens = line
             .split_whitespace()
@@ -24,7 +24,7 @@ enum Expr {
 
 impl Expr {
     fn parse(tokens: Vec<Token>) -> Option<Vec<Self>> {
-        let tokens: Vec<_> = tokens.split(|x| matches!(x, Token::And)).collect();
+        let tokenss: Vec<_> = tokens.split(|x| matches!(x, Token::And)).collect();
         let exprgen = |tokens: Vec<Token>, n: usize| match tokens.get(n)? {
             Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
                 "lev" => Some(Expr::Add(Expr::parse(tokens.get(n + 1..)?.to_vec())?)),
@@ -51,17 +51,19 @@ impl Expr {
             },
             _ => None,
         };
-        tokens
-            .iter()
-            .map(|x| {
-                let x = x.to_vec();
-                if let Some(res) = exprgen(x.clone(), 0) {
-                    Some(res)
-                } else {
-                    exprgen(x, 1)
-                }
-            })
-            .collect()
+        let tried = |x: &&[Token]| {
+            let x = x.to_vec();
+            if let Some(res) = exprgen(x.clone(), 0) {
+                Some(res)
+            } else {
+                exprgen(x, 1)
+            }
+        };
+        if tokenss.iter().all(|x| x.len() == 1) {
+            tokenss.iter().map(tried).collect()
+        } else {
+            Some(vec![tried(&&tokens.as_slice())?])
+        }
     }
 }
 
