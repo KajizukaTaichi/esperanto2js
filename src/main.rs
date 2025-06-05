@@ -1,9 +1,5 @@
 fn main() {
-    let code = "
-        Hogi estas aldoni 1 kaj tion.
-        Numero estas hogi aldoni 1 kaj 2.
-        Mi multas 3 kaj numeron
-    ";
+    let code = include_str!("../example.esp");
     println!("{}", run(code).unwrap());
 }
 
