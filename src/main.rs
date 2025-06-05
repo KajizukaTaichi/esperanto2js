@@ -69,10 +69,17 @@ impl Expr {
     fn compile(&self) -> Option<String> {
         match self {
             Expr::Add(nums) => Some(format!(
-                "[{}]reduce((acc, cur) => acc + cur, 0)",
-  nums.iter().map(|x| x.compile()).collect::<Option<Vec<_>>>()?.join(", ")
+                "[{}].reduce((acc, cur) => acc + cur, 0)",
+                nums.iter()
+                    .map(|x| x.compile())
+                    .collect::<Option<Vec<_>>>()?
+                    .join(", ")
             )),
-            _=>todo!()
+            Expr::Defun(name, body) => Some(format!(
+                "function {name}(ti) {{ {} }}",
+                body.first()?.compile()?
+            )),
+            Expr::Number(n) => Some(n.to_string()),
         }
     }
 }
