@@ -1,8 +1,9 @@
 fn main() {
     let code = "
-        Inci estas levi 1 kaj tion.
-        Numero estas inci levi 1 kaj 2.
-        Mi levas 3 kaj numeron";
+        Hogi estas levi 1 kaj tion.
+        Numero estas hogas levi 1 kaj 2.
+        Mi multas 3 kaj numeron
+    ";
     println!("{}", run(code).unwrap());
 }
 
@@ -26,7 +27,7 @@ enum Expr {
     Defun(String, Vec<Expr>),
     Let(String, Vec<Expr>),
     Call(String, Vec<Expr>),
-    Add(Vec<Expr>),
+    Oper(String, Vec<Expr>),
     Number(isize),
     Variable(String),
 }
@@ -53,7 +54,14 @@ impl Expr {
         };
         let exprgen = |tokens: Vec<Token>| match tokens.get(0)? {
             Token::Infinitive(name) | Token::Verb(name) => match name.as_str() {
-                "lev" => Some(Expr::Add(Expr::parse(tokens.get(1..)?.to_vec())?)),
+                "lev" => Some(Expr::Oper(
+                    "+".to_owned(),
+                    Expr::parse(tokens.get(1..)?.to_vec())?,
+                )),
+                "mult" => Some(Expr::Oper(
+                    "*".to_owned(),
+                    Expr::parse(tokens.get(1..)?.to_vec())?,
+                )),
                 name => Some(Expr::Call(
                     name.to_string(),
                     Expr::parse(tokens.get(1..)?.to_vec())?,
@@ -83,11 +91,11 @@ impl Expr {
 
     fn compile(&self) -> Option<String> {
         match self {
-            Expr::Add(nums) => Some(
+            Expr::Oper(op, nums) => Some(
                 nums.iter()
                     .map(|x| x.compile())
                     .collect::<Option<Vec<_>>>()?
-                    .join(" + "),
+                    .join(op),
             ),
             Expr::Defun(name, body) => Some(format!(
                 "function {name}(ti) {{ return {} }}",
